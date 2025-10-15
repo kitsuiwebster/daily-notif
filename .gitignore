@@ -1,0 +1,42 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Gradle
+.gradle/
+build/
+*/build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Android/NDK
+local.properties
+.cxx/
+.externalNativeBuild/
+captures/
+
+# Outputs
+*.apk
+*.aab
+*.ap_
+app-release-aligned.apk
+app-release-signed.apk
+outputs/
+*/outputs/
+
+# Logs
+*.log
+
+# Keystores & signing config (ne JAMAIS commit)
+*.jks
+*.keystore
+keystore.properties
+release.keystore
+
+# Kotlin/Java
+*.class
