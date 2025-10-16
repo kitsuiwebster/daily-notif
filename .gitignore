@@ -40,3 +40,6 @@ release.keystore
 
 # Kotlin/Java
 *.class
+
+# Claude Code files
+CLAUDE.md
