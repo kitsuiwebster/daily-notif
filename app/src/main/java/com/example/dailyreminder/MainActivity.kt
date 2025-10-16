@@ -9,15 +9,15 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var status: TextView
+    private lateinit var webView: WebView
 
     private val notifPerm = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -25,44 +25,50 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        webView = WebView(this)
+        webView.settings.javaScriptEnabled = true
+        webView.settings.domStorageEnabled = true
+        webView.webViewClient = WebViewClient()
+        
+        // Interface JavaScript pour communiquer avec le HTML
+        webView.addJavascriptInterface(WebAppInterface(), "AndroidInterface")
+        
+        webView.loadUrl("file:///android_asset/index.html")
+        setContentView(webView)
+    }
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 96, 48, 24)
-        }
-        val title = TextView(this).apply {
-            text = "Daily Reminder\n\nActive la notif quotidienne, ou teste tout de suite."
-            textSize = 18f
-        }
-        val enableBtn = Button(this).apply { text = "Activer les rappels (1/jour)" }
-        val testNowBtn = Button(this).apply { text = "Tester maintenant (notif immédiate)" }
-        val test30sBtn = Button(this).apply { text = "Planifier dans 30 secondes" }
-        status = TextView(this)
-
-        root.addView(title)
-        root.addView(enableBtn)
-        root.addView(testNowBtn)
-        root.addView(test30sBtn)
-        root.addView(status)
-        setContentView(root)
-
-        enableBtn.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= 33) {
-                notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
-            } else {
-                askExactAlarmThenStart()
+    inner class WebAppInterface {
+        @JavascriptInterface
+        fun enableNotifications() {
+            runOnUiThread {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    askExactAlarmThenStart()
+                }
             }
         }
 
-        testNowBtn.setOnClickListener {
-            // Affiche une notification tout de suite (utile pour debug)
-            NotificationHelper.showNow(this)
+        @JavascriptInterface
+        fun testNow() {
+            runOnUiThread {
+                NotificationHelper.showNow(this@MainActivity)
+                updateWebStatus("Notification sent!")
+            }
         }
 
-        test30sBtn.setOnClickListener {
-            scheduleInSeconds(30)
-            status.text = "Test : une notif devrait arriver dans ~30s."
+        @JavascriptInterface
+        fun test30s() {
+            runOnUiThread {
+                scheduleInSeconds(30)
+                updateWebStatus("Test scheduled in 30 seconds")
+            }
         }
+    }
+
+    private fun updateWebStatus(message: String) {
+        webView.evaluateJavascript("updateStatus('$message')", null)
     }
 
     private fun askExactAlarmThenStart() {
@@ -72,12 +78,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     data = Uri.parse("package:$packageName")
                 })
-                status.text = "Autorise les alarmes exactes puis reclique."
+                updateWebStatus("Please allow exact alarms and try again")
                 return
             }
         }
         AlarmScheduler.scheduleNext(this)
-        status.text = "OK : 1 notif/jour (heure aléatoire)."
+        updateWebStatus("Perfect! Notifications enabled")
     }
 
     private fun scheduleInSeconds(sec: Int) {

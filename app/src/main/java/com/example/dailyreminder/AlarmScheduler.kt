@@ -32,4 +32,13 @@ object AlarmScheduler {
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, trigger.timeInMillis, pi)
         }
     }
+
+    fun cancelNext(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val pi = PendingIntent.getBroadcast(
+            context, 1001, Intent(context, ReminderReceiver::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pi)
+    }
 }

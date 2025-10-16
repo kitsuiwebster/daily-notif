@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Bubble</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding-top: 60px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .test-section {
+            margin-top: 20px;
+        }
+
+        .test-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🫧</div>
+            <h1 class="title">Hello Bubble</h1>
+            <p class="subtitle">Des notifications motivantes<br>chaque jour à une heure surprise</p>
+        </div>
+
+        <div class="card">
+            <button class="btn btn-primary" onclick="enableNotifications()">
+                Activer les rappels quotidiens
+            </button>
+            <div class="status" id="status">
+                Appuyez pour commencer
+            </div>
+        </div>
+
+        <div class="card test-section">
+            <h3 class="test-title">Zone de test</h3>
+            <button class="btn btn-secondary" onclick="testNow()">
+                Tester maintenant
+            </button>
+            <button class="btn btn-secondary" onclick="test30s()">
+                Test dans 30 secondes
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.offsetLeft - radius}px`;
+            circle.style.top = `${event.clientY - button.offsetTop - radius}px`;
+            circle.classList.add("ripple");
+
+            const ripple = button.getElementsByClassName("ripple")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', createRipple);
+        });
+
+        function enableNotifications() {
+            if (window.AndroidInterface) {
+                window.AndroidInterface.enableNotifications();
+            }
+            updateStatus("Activation des notifications...");
+        }
+
+        function testNow() {
+            if (window.AndroidInterface) {
+                window.AndroidInterface.testNow();
+            }
+            updateStatus("Test de notification envoyé !");
+        }
+
+        function test30s() {
+            if (window.AndroidInterface) {
+                window.AndroidInterface.test30s();
+            }
+            updateStatus("Test programmé dans 30 secondes");
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+    </script>
+</body>
+</html>
