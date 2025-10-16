@@ -51,10 +51,16 @@ class MainActivity : AppCompatActivity() {
         }
 
         @JavascriptInterface
+        fun disableNotifications() {
+            runOnUiThread {
+                AlarmScheduler.cancelNext(this@MainActivity)
+            }
+        }
+
+        @JavascriptInterface
         fun testNow() {
             runOnUiThread {
                 NotificationHelper.showNow(this@MainActivity)
-                updateWebStatus("Notification sent!")
             }
         }
 
@@ -62,13 +68,8 @@ class MainActivity : AppCompatActivity() {
         fun test30s() {
             runOnUiThread {
                 scheduleInSeconds(30)
-                updateWebStatus("Test scheduled in 30 seconds")
             }
         }
-    }
-
-    private fun updateWebStatus(message: String) {
-        webView.evaluateJavascript("updateStatus('$message')", null)
     }
 
     private fun askExactAlarmThenStart() {
@@ -78,12 +79,11 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
                     data = Uri.parse("package:$packageName")
                 })
-                updateWebStatus("Please allow exact alarms and try again")
                 return
             }
         }
         AlarmScheduler.scheduleNext(this)
-        updateWebStatus("Perfect! Notifications enabled")
+        webView.evaluateJavascript("notificationsEnabled()", null)
     }
 
     private fun scheduleInSeconds(sec: Int) {

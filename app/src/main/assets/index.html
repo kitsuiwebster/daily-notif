@@ -165,25 +165,22 @@
         <div class="header">
             <div class="logo">🫧</div>
             <h1 class="title">Hello Bubble</h1>
-            <p class="subtitle">Des notifications motivantes<br>chaque jour à une heure surprise</p>
+            <p class="subtitle">Little drops of happiness<br>every day at surprise times</p>
         </div>
 
         <div class="card">
-            <button class="btn btn-primary" onclick="enableNotifications()">
-                Activer les rappels quotidiens
+            <button class="btn btn-primary" id="mainBtn" onclick="toggleNotifications()">
+                Enable Daily Reminders
             </button>
-            <div class="status" id="status">
-                Appuyez pour commencer
-            </div>
         </div>
 
         <div class="card test-section">
-            <h3 class="test-title">Zone de test</h3>
+            <h3 class="test-title">Test Zone</h3>
             <button class="btn btn-secondary" onclick="testNow()">
-                Tester maintenant
+                Test Now
             </button>
             <button class="btn btn-secondary" onclick="test30s()">
-                Test dans 30 secondes
+                Test in 30 seconds
             </button>
         </div>
     </div>
@@ -212,29 +209,37 @@
             btn.addEventListener('click', createRipple);
         });
 
-        function enableNotifications() {
-            if (window.AndroidInterface) {
-                window.AndroidInterface.enableNotifications();
+        let isEnabled = false;
+
+        function toggleNotifications() {
+            if (isEnabled) {
+                if (window.AndroidInterface) {
+                    window.AndroidInterface.disableNotifications();
+                }
+                isEnabled = false;
+                document.getElementById('mainBtn').textContent = 'Enable Daily Reminders';
+            } else {
+                if (window.AndroidInterface) {
+                    window.AndroidInterface.enableNotifications();
+                }
             }
-            updateStatus("Activation des notifications...");
         }
 
         function testNow() {
             if (window.AndroidInterface) {
                 window.AndroidInterface.testNow();
             }
-            updateStatus("Test de notification envoyé !");
         }
 
         function test30s() {
             if (window.AndroidInterface) {
                 window.AndroidInterface.test30s();
             }
-            updateStatus("Test programmé dans 30 secondes");
         }
 
-        function updateStatus(message) {
-            document.getElementById('status').textContent = message;
+        function notificationsEnabled() {
+            isEnabled = true;
+            document.getElementById('mainBtn').textContent = 'Disable Daily Reminders';
         }
     </script>
 </body>
