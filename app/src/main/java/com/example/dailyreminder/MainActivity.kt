@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface
         fun testNow() {
             runOnUiThread {
-                NotificationHelper.showNow(this@MainActivity)
+                NotificationHelper.showNow(this@MainActivity, "Test notification - Hello Bubble!")
             }
         }
 
@@ -89,8 +89,11 @@ class MainActivity : AppCompatActivity() {
     private fun scheduleInSeconds(sec: Int) {
         val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val triggerAt = System.currentTimeMillis() + sec * 1000L
+        val intent = Intent(this, ReminderReceiver::class.java).apply {
+            putExtra("test_message", "Test in 30s - Hello Bubble working!")
+        }
         val pi = PendingIntent.getBroadcast(
-            this, 2002, Intent(this, ReminderReceiver::class.java),
+            this, 2002, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
