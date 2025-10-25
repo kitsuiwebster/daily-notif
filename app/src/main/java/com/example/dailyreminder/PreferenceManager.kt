@@ -10,6 +10,8 @@ object PreferenceManager {
     private const val KEY_NOTIFICATIONS_ENABLED = "notifications_enabled"
     private const val KEY_LAST_NOTIFICATION_DATE = "last_notification_date"
     private const val KEY_NEXT_SCHEDULED_TIME = "next_scheduled_time"
+    private const val KEY_SENT_MESSAGES = "sent_messages"
+    private const val KEY_TOTAL_MESSAGES_COUNT = "total_messages_count"
     
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -60,5 +62,42 @@ object PreferenceManager {
         val now = System.currentTimeMillis()
         // If we have a scheduled time in the future, consider it valid
         return nextScheduledTime > now
+    }
+    
+    // Message tracking methods
+    fun getSentMessages(context: Context): Set<String> {
+        return getPrefs(context).getStringSet(KEY_SENT_MESSAGES, emptySet()) ?: emptySet()
+    }
+    
+    fun addSentMessage(context: Context, message: String) {
+        val currentSent = getSentMessages(context).toMutableSet()
+        currentSent.add(message)
+        getPrefs(context).edit()
+            .putStringSet(KEY_SENT_MESSAGES, currentSent)
+            .apply()
+    }
+    
+    fun resetSentMessages(context: Context) {
+        getPrefs(context).edit()
+            .putStringSet(KEY_SENT_MESSAGES, emptySet())
+            .apply()
+    }
+    
+    fun getTotalMessagesCount(context: Context): Int {
+        return getPrefs(context).getInt(KEY_TOTAL_MESSAGES_COUNT, 0)
+    }
+    
+    fun setTotalMessagesCount(context: Context, count: Int) {
+        getPrefs(context).edit()
+            .putInt(KEY_TOTAL_MESSAGES_COUNT, count)
+            .apply()
+    }
+    
+    fun shouldResetMessageCycle(context: Context, totalAvailableMessages: Int): Boolean {
+        val sentMessages = getSentMessages(context)
+        val storedCount = getTotalMessagesCount(context)
+        
+        // Reset if we've sent all messages or if the total count has changed (new messages added)
+        return sentMessages.size >= totalAvailableMessages || storedCount != totalAvailableMessages
     }
 }

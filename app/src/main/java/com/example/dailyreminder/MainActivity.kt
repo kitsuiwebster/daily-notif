@@ -71,11 +71,30 @@ class MainActivity : AppCompatActivity() {
         fun isNotificationsEnabled(): Boolean {
             return PreferenceManager.areNotificationsEnabled(this@MainActivity)
         }
+        
+        @JavascriptInterface
+        fun getMessageCycleStatus(): String {
+            val totalMessages = MessageRepository.getAllMessages(this@MainActivity).size
+            val sentMessages = MessageRepository.getSentMessagesCount(this@MainActivity)
+            val availableMessages = MessageRepository.getAvailableMessagesCount(this@MainActivity)
+            return "Cycle: $sentMessages/$totalMessages sent • $availableMessages remaining"
+        }
+        
+        @JavascriptInterface
+        fun resetMessageCycle() {
+            runOnUiThread {
+                PreferenceManager.resetSentMessages(this@MainActivity)
+            }
+        }
 
         @JavascriptInterface
         fun testNow() {
             runOnUiThread {
-                NotificationHelper.showNow(this@MainActivity, "Test notification - Hello Bubble!")
+                // Test the actual message selection system
+                val message = MessageRepository.randomMessage(this@MainActivity)
+                NotificationHelper.showNow(this@MainActivity, message)
+                // Mark as sent for cycle tracking
+                MessageRepository.markMessageAsSent(this@MainActivity, message)
             }
         }
 

@@ -27,9 +27,14 @@ class ReminderReceiver : BroadcastReceiver() {
         // Si une phrase est définie pour AUJOURD'HUI (overrides.json), on l'utilise
         val override = DateOverrideRepository.messageForTodayOrNull(context)
         if (override != null) {
+            // Date override - don't track this message, just show it
             NotificationHelper.showNow(context, override)
         } else {
-            NotificationHelper.showNow(context)
+            // Regular message - get from repository and track it
+            val message = MessageRepository.randomMessage(context)
+            NotificationHelper.showNow(context, message)
+            // Mark this message as sent (for cycle tracking)
+            MessageRepository.markMessageAsSent(context, message)
         }
         
         // Mark that we sent a notification today

@@ -20,7 +20,7 @@ object NotificationHelper {
             nm.createNotificationChannel(channel)
         }
 
-        val text = content ?: MessageRepository.randomMessage(context)
+        val text = content ?: "Coucou 👋" // Fallback if no content provided
 
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_popup_reminder)
