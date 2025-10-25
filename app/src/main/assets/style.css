@@ -127,16 +127,27 @@ body {
     justify-content: center;
 }
 
-.test-section {
+.status-indicator {
+    text-align: center;
     margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(33, 150, 243, 0.2);
 }
 
-.test-title {
-    font-size: 18px;
+.status-emoji {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.status-text {
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 15px;
-    text-align: center;
     color: #1976D2;
+    opacity: 0.9;
 }
 
 .ripple {

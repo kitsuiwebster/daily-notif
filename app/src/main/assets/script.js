@@ -17,10 +17,6 @@ function createRipple(event) {
     button.appendChild(circle);
 }
 
-document.querySelectorAll('.btn-secondary').forEach(btn => {
-    btn.addEventListener('click', createRipple);
-});
-
 let isEnabled = false;
 
 // Check the state when page loads
@@ -48,6 +44,7 @@ function toggleNotifications() {
         isEnabled = false;
         btn.textContent = 'Enable Daily Popups';
         btn.classList.remove('enabled');
+        updateStatusIndicator(false);
     } else {
         if (window.AndroidInterface) {
             window.AndroidInterface.enableNotifications();
@@ -55,15 +52,16 @@ function toggleNotifications() {
     }
 }
 
-function testNow() {
-    if (window.AndroidInterface) {
-        window.AndroidInterface.testNow();
-    }
-}
-
-function test30s() {
-    if (window.AndroidInterface) {
-        window.AndroidInterface.test30s();
+function updateStatusIndicator(enabled) {
+    const statusEmoji = document.getElementById('statusEmoji');
+    const statusText = document.getElementById('statusText');
+    
+    if (enabled) {
+        statusEmoji.textContent = '🔔';
+        statusText.textContent = 'Notifications Enabled';
+    } else {
+        statusEmoji.textContent = '🔕';
+        statusText.textContent = 'Notifications Disabled';
     }
 }
 
@@ -72,4 +70,5 @@ function notificationsEnabled() {
     isEnabled = true;
     btn.textContent = 'Disable Daily Popups';
     btn.classList.add('enabled');
+    updateStatusIndicator(true);
 }

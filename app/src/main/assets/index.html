@@ -17,16 +17,10 @@
             <button class="btn btn-primary" id="mainBtn" onclick="toggleNotifications()">
                 Enable Daily Popups
             </button>
-        </div>
-
-        <div class="card test-section">
-            <h3 class="test-title">Test Zone</h3>
-            <button class="btn btn-secondary" onclick="testNow()">
-                Test Now
-            </button>
-            <button class="btn btn-secondary" onclick="test30s()">
-                Test in 30 seconds
-            </button>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-emoji" id="statusEmoji">🔕</span>
+                <span class="status-text" id="statusText">Notifications Disabled</span>
+            </div>
         </div>
     </div>
 
