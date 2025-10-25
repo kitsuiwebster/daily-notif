@@ -23,6 +23,22 @@ document.querySelectorAll('.btn-secondary').forEach(btn => {
 
 let isEnabled = false;
 
+// Check the state when page loads
+function checkNotificationState() {
+    if (window.AndroidInterface && window.AndroidInterface.isNotificationsEnabled) {
+        const enabled = window.AndroidInterface.isNotificationsEnabled();
+        if (enabled) {
+            notificationsEnabled();
+        }
+    }
+}
+
+// Call checkNotificationState when the page is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Small delay to ensure AndroidInterface is ready
+    setTimeout(checkNotificationState, 100);
+});
+
 function toggleNotifications() {
     const btn = document.getElementById('mainBtn');
     if (isEnabled) {

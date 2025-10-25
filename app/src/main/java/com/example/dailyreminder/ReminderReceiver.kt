@@ -13,6 +13,17 @@ class ReminderReceiver : BroadcastReceiver() {
             return
         }
         
+        // Check if notifications are enabled and if we should send one today
+        if (!PreferenceManager.areNotificationsEnabled(context)) {
+            return
+        }
+        
+        if (!PreferenceManager.shouldSendNotificationToday(context)) {
+            // We already sent a notification today, schedule for tomorrow
+            AlarmScheduler.forceScheduleForTomorrow(context)
+            return
+        }
+        
         // Si une phrase est définie pour AUJOURD'HUI (overrides.json), on l'utilise
         val override = DateOverrideRepository.messageForTodayOrNull(context)
         if (override != null) {
@@ -20,7 +31,11 @@ class ReminderReceiver : BroadcastReceiver() {
         } else {
             NotificationHelper.showNow(context)
         }
-        // Replanifier la prochaine notification (app fonctionne à l'infini)
-        AlarmScheduler.scheduleNext(context)
+        
+        // Mark that we sent a notification today
+        PreferenceManager.markNotificationSentToday(context)
+        
+        // Schedule the next notification for tomorrow
+        AlarmScheduler.forceScheduleForTomorrow(context)
     }
 }

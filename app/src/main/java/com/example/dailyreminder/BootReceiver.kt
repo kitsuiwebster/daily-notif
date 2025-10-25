@@ -7,7 +7,10 @@ import android.content.Intent
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == "android.intent.action.BOOT_COMPLETED") {
-            AlarmScheduler.scheduleNext(context)
+            // Only reschedule if notifications were enabled before reboot
+            if (PreferenceManager.areNotificationsEnabled(context)) {
+                AlarmScheduler.scheduleNext(context)
+            }
         }
     }
 }

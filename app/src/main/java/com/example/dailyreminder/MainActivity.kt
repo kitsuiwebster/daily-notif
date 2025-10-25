@@ -29,7 +29,15 @@ class MainActivity : AppCompatActivity() {
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                // Restore toggle state when page loads
+                if (PreferenceManager.areNotificationsEnabled(this@MainActivity)) {
+                    webView.evaluateJavascript("notificationsEnabled()", null)
+                }
+            }
+        }
         
         // Interface JavaScript pour communiquer avec le HTML
         webView.addJavascriptInterface(WebAppInterface(), "AndroidInterface")
@@ -42,6 +50,7 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface
         fun enableNotifications() {
             runOnUiThread {
+                PreferenceManager.setNotificationsEnabled(this@MainActivity, true)
                 if (Build.VERSION.SDK_INT >= 33) {
                     notifPerm.launch(Manifest.permission.POST_NOTIFICATIONS)
                 } else {
@@ -53,8 +62,14 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface
         fun disableNotifications() {
             runOnUiThread {
+                PreferenceManager.setNotificationsEnabled(this@MainActivity, false)
                 AlarmScheduler.cancelNext(this@MainActivity)
             }
+        }
+        
+        @JavascriptInterface
+        fun isNotificationsEnabled(): Boolean {
+            return PreferenceManager.areNotificationsEnabled(this@MainActivity)
         }
 
         @JavascriptInterface
